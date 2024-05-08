@@ -1,22 +1,29 @@
-import { Container, Heading, Image, Table, Tbody, Th, Thead, Tr } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
-import { axiosInstance } from './lib/axios';
+import {
+  Container,
+  Flex,
+  Heading,
+  Image,
+  Spinner,
+  Table,
+  Tbody,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
+import { useFetchProducts } from './hooks/useFetchProducts';
 
 function App() {
-  const [products, setProducts] = useState([]);
+  const { products, isLoading } = useFetchProducts();
 
-  const fetchProducts = async () => {
-    try {
-      const { data } = await axiosInstance.get('/products');
-      setProducts(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  if (isLoading || products.length === 0) {
+    return (
+      <Container maxW="container.xl">
+        <Flex justifyContent="center" alignItems="center" h="100vh">
+          <Spinner size="lg" />
+        </Flex>
+      </Container>
+    );
+  }
 
   return (
     <Container maxW="container.xl">
