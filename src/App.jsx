@@ -1,21 +1,28 @@
 import {
+  Button,
   Container,
   Flex,
+  FormControl,
+  FormHelperText,
+  FormLabel,
   Heading,
   Image,
+  Input,
   Spinner,
   Table,
   Tbody,
+  Textarea,
   Th,
   Thead,
   Tr,
+  VStack,
 } from '@chakra-ui/react';
 import { useFetchProducts } from './hooks/useFetchProducts';
 
 function App() {
-  const { products, isLoading } = useFetchProducts();
+  const { data: products, isLoading } = useFetchProducts();
 
-  if (isLoading || products.length === 0) {
+  if (isLoading) {
     return (
       <Container maxW="container.xl">
         <Flex justifyContent="center" alignItems="center" h="100vh">
@@ -26,9 +33,9 @@ function App() {
   }
 
   return (
-    <Container maxW="container.xl">
+    <Container maxW="container.xl" marginY={16}>
       <Heading>Products</Heading>
-      <Table>
+      <Table mb={8}>
         <Thead>
           <Tr>
             <Th>ID</Th>

@@ -1,29 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '../lib/axios';
 
 export const useFetchProducts = () => {
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const fetchProducts = async () => {
-    setIsLoading(true);
-    try {
-      setTimeout(async () => {
-        const { data } = await axiosInstance.get('/products');
-        setProducts(data);
-        setIsLoading(false);
-      }, 1500);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  return {
-    products,
-    isLoading,
-  };
+  return useQuery({
+    queryFn: async () => {
+      try {
+        const { data } = await axiosInstance.get('/products?limit=5');
+        return data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    queryKey: ['products'],
+  });
 };
