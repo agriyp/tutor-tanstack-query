@@ -11,6 +11,6 @@ export const useFetchProducts = () => {
         console.log(error);
       }
     },
-    queryKey: ['products'],
+    queryKey: ['fetch.products'],
   });
 };

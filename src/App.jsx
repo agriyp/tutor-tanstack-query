@@ -21,18 +21,44 @@ import {
 import { useFetchProducts } from './hooks/useFetchProducts';
 import { useFormik } from 'formik';
 import { useAddProduct } from './hooks/useAddProduct';
+import { useDeleteProduct } from './hooks/useDeleteProduct';
 
 function App() {
+  const toast = useToast();
+
   const {
     data: products,
     isLoading: fetchProductIsLoading,
     refetch: refetchProduct,
   } = useFetchProducts();
-  const { mutate, isLoading: AddProductIsLoading } = useAddProduct({
+
+  const { mutate: addProduct, isLoading: AddProductIsLoading } = useAddProduct({
     onSuccess: () => {
       refetchProduct();
     },
   });
+
+  const { mutate: deleteProduct } = useDeleteProduct({
+    onSuccess: () => {
+      refetchProduct();
+    },
+  });
+
+  const confirmationDelete = (productId) => {
+    const shouldDelete = confirm(`are you sure to delete product ${productId}`);
+
+    if (shouldDelete) {
+      deleteProduct(productId);
+      toast({
+        title: 'Success',
+        description: 'Product deleted',
+        status: 'info',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       title: '',
@@ -43,7 +69,7 @@ function App() {
     },
     onSubmit: () => {
       const { title, price, category, description, image } = formik.values;
-      mutate({
+      addProduct({
         title,
         price,
         category,
@@ -65,8 +91,6 @@ function App() {
       });
     },
   });
-
-  const toast = useToast();
 
   const onChangeHandler = (event) => {
     const { name, value } = event.target;
@@ -95,6 +119,7 @@ function App() {
             <Th>Category</Th>
             <Th>Description</Th>
             <Th>Image</Th>
+            <Th>Action</Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -109,6 +134,11 @@ function App() {
                 <Box boxSize="100px" bg={product.color}>
                   <Image boxSize="100%" objectFit="contain" src={product.image} />
                 </Box>
+              </Th>
+              <Th>
+                <Button colorScheme="red" onClick={() => confirmationDelete(product.id)}>
+                  Delete
+                </Button>
               </Th>
             </Tr>
           ))}
