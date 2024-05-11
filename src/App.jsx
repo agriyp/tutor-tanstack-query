@@ -20,18 +20,17 @@ import {
 } from '@chakra-ui/react';
 import { useFetchProducts } from './hooks/useFetchProducts';
 import { useFormik } from 'formik';
-import { useMutation } from '@tanstack/react-query';
-import { axiosInstance } from './lib/axios';
+import { useAddProduct } from './hooks/useAddProduct';
 
 function App() {
-  const { data: products, isLoading, refetch } = useFetchProducts();
-  const { mutate } = useMutation({
-    mutationFn: (body) => {
-      const response = axiosInstance.post('/products', body);
-      return response;
-    },
+  const {
+    data: products,
+    isLoading: fetchProductIsLoading,
+    refetch: refetchProduct,
+  } = useFetchProducts();
+  const { mutate, isLoading: AddProductIsLoading } = useAddProduct({
     onSuccess: () => {
-      refetch();
+      refetchProduct();
     },
   });
   const formik = useFormik({
@@ -74,7 +73,7 @@ function App() {
     formik.setFieldValue(name, value);
   };
 
-  if (isLoading) {
+  if (fetchProductIsLoading) {
     return (
       <Container maxW="container.xl">
         <Flex justifyContent="center" alignItems="center" h="100vh">
@@ -156,8 +155,8 @@ function App() {
               value={formik.values.category}
             />
           </FormControl>
-          <Button colorScheme="blue" type="submit">
-            Add Product
+          <Button w="10rem" colorScheme="blue" type="submit">
+            {AddProductIsLoading ? <Spinner /> : `Add Product`}
           </Button>
         </VStack>
       </form>
